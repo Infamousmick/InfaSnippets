@@ -4,13 +4,15 @@ const initDatabaseConnection = require("./src/config/db");
 const AuthRoute = require("./src/modules/auth/Auth.routes");
 const server = express();
 const PORT = process.env.PORT || 3001;
+const verifyToken = require("./src/middlewares/auth/auth.middlewares");
 const cors = require("cors");
-const errorHandler = require("./src/middlewares/errors/errorHandler")
+const errorHandler = require("./src/middlewares/errors/errorHandler");
 const pc = require("picocolors");
 
 server.use(cors());
 server.use(express.json());
 server.use("/auth", AuthRoute);
+server.use(verifyToken);
 
 const initServer = async () => {
   await initDatabaseConnection();
@@ -20,5 +22,5 @@ const initServer = async () => {
     );
   });
 };
-server.use(errorHandler)
+server.use(errorHandler);
 initServer();
