@@ -8,14 +8,16 @@ const PORT = process.env.PORT || 3001;
 const verifyToken = require("./src/middlewares/auth/auth.middlewares");
 const cors = require("cors");
 const errorHandler = require("./src/middlewares/errors/errorHandler");
+
+const { requestLogger } = require("./src/middlewares/logger/logger");
 const pc = require("picocolors");
 
 server.use(cors());
 server.use(express.json());
+server.use(requestLogger);
 server.use("/auth", AuthRoute);
 server.use(verifyToken);
 server.use("/snippets", SnippetsRoute);
-
 
 const initServer = async () => {
   await initDatabaseConnection();
