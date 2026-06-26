@@ -53,4 +53,15 @@ const login = async (body) => {
   return { token, user: safeUser };
 };
 
-module.exports = { registerUser, login };
+const getMe = async (userId) => {
+  const currentUser =
+    await UsersSchema.findById(userId).select("-password_hash");
+
+  if (!currentUser) {
+    throw new HttpException("User not found", 404);
+  }
+
+  return currentUser;
+};
+
+module.exports = { registerUser, login, getMe };

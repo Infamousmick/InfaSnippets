@@ -7,6 +7,7 @@ const {
   validate,
 } = require("../../middlewares/validation/AuthValidation");
 const authController = require("./Auth.controller");
+const verifyToken = require("../../middlewares/auth/auth.middlewares");
 
 auth.post(
   "/register",
@@ -15,4 +16,6 @@ auth.post(
   authController.registerUser,
 );
 auth.post("/login", loginValidationRules, validate, authController.login);
+
+auth.get("/me", verifyToken, authController.getMe);
 module.exports = auth;
