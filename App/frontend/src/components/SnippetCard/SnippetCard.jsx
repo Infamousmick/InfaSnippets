@@ -1,4 +1,5 @@
-import { Star, MessageSquare, GitFork } from "lucide-react";
+import { Star, MessageSquare, GitFork, Copy, Check } from "lucide-react";
+import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import {
@@ -10,8 +11,11 @@ import {
   MyCardFooter,
 } from "../MyCard/MyCard";
 import "./SnippetCard.css";
+import GeminiBtn from "../GeminiBtn/GeminiBtn";
 
 const SnippetCard = ({ snippet }) => {
+  const [isCopied, setisCopied] = useState(false);
+
   const data = snippet || {
     author: {
       username: "Infamousmick",
@@ -63,6 +67,12 @@ const SnippetCard = ({ snippet }) => {
     stats: { stars: 842, comments: 36, forks: 214 },
   };
 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(data.code);
+    setisCopied(true);
+    setTimeout(() => setisCopied(false), 2000);
+  };
+
   return (
     <MyCard className="mb-4">
       <MyCardHeader>
@@ -101,6 +111,8 @@ const SnippetCard = ({ snippet }) => {
               padding: "1rem",
               backgroundColor: "transparent",
               fontSize: "0.875rem",
+              maxHeight: "280px",
+              overflowY: "auto",
             }}
           >
             {data.code}
@@ -116,19 +128,38 @@ const SnippetCard = ({ snippet }) => {
         </div>
       </MyCardContent>
 
-      <MyCardFooter className="gap-1">
-        <button className="stat-btn active-star d-flex align-items-center gap-1">
-          <Star size={16} className="stat-icon" />
-          <span>{data.stats.stars}</span>
-        </button>
-        <button className="stat-btn d-flex align-items-center gap-1">
-          <MessageSquare size={16} className="stat-icon" />
-          <span>{data.stats.comments}</span>
-        </button>
-        <button className="stat-btn d-flex align-items-center gap-1">
-          <GitFork size={16} className="stat-icon" />
-          <span>{data.stats.forks}</span>
-        </button>
+      <MyCardFooter className="gap-3 flex-wrap justify-content-between">
+        <div className="d-flex gap-2 flex-wrap">
+          <button className="stat-btn active-star d-flex align-items-center gap-1">
+            <Star size={16} className="stat-icon" />
+            <span>{data.stats.stars}</span>
+          </button>
+          <button className="stat-btn d-flex align-items-center gap-1">
+            <MessageSquare size={16} className="stat-icon" />
+            <span>{data.stats.comments}</span>
+          </button>
+          <button className="stat-btn d-flex align-items-center gap-1">
+            <GitFork size={16} className="stat-icon" />
+            <span>{data.stats.forks}</span>
+          </button>
+        </div>
+
+        <div className="d-flex gap-2 align-content-center flex-wrap">
+          <button
+            className="stat-btn d-flex align-items-center gap-1 copy-btn"
+            onClick={handleCopy}
+            title="Copy"
+          >
+            {isCopied ? (
+              <Check size={16} className="text-success" />
+            ) : (
+              <Copy size={16} className="stat-icon" />
+            )}
+            <span>{isCopied ? "Copied" : "Copy"}</span>
+          </button>
+
+          <GeminiBtn />
+        </div>
       </MyCardFooter>
     </MyCard>
   );

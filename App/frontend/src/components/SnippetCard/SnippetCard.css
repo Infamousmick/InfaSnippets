@@ -23,6 +23,24 @@
     overflow: hidden;
 }
 
+.code-block-wrapper pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.code-block-wrapper pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.code-block-wrapper pre::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.code-block-wrapper pre::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 .code-block-header {
     background-color: var(--bg-code-header);
     border-bottom: 1px solid var(--border-color);
@@ -95,4 +113,9 @@
 
 .active-star .stat-icon {
     fill: var(--accent-green);
+}
+
+.copy-btn {
+    min-width: 80px;
+    justify-content: center;
 }
