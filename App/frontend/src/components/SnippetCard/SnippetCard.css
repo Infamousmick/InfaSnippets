@@ -119,3 +119,15 @@
     min-width: 80px;
     justify-content: center;
 }
+
+.ai-generated-badge {
+    background-color: rgba(147, 51, 234, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(147, 51, 234, 0.2);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}

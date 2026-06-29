@@ -1,4 +1,11 @@
-import { Star, MessageSquare, GitFork, Copy, Check } from "lucide-react";
+import {
+  Star,
+  MessageSquare,
+  GitFork,
+  Copy,
+  Check,
+  Sparkles,
+} from "lucide-react";
 import { useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -33,6 +40,7 @@ const SnippetCard = ({ snippet }) => {
     typeof data.code_content === "string"
       ? data.code_content.replace(/\r\n/g, "\n")
       : "";
+  const isAiGenerated = data.is_ai_generated;
   const tags = Array.isArray(data.tags) ? data.tags : [];
   const starsCount = countItems(data.stars);
   const commentsCount = countItems(data.comments);
@@ -47,16 +55,24 @@ const SnippetCard = ({ snippet }) => {
   return (
     <MyCard className="mb-4">
       <MyCardHeader>
-        <div className="d-flex align-items-center gap-2 mb-3">
-          <img src={avatar_url} alt={username} className="author-avatar" />
-          <div className="d-flex flex-column">
-            <span className="author-name">{username}</span>
-            <span className="author-handle">
-              {data.createdAt
-                ? new Date(data.createdAt).toLocaleDateString()
-                : "Just now"}
-            </span>
+        <div className="d-flex justify-content-between align-items-start mb-3">
+          <div className="d-flex align-items-center gap-2 mb-3">
+            <img src={avatar_url} alt={username} className="author-avatar" />
+            <div className="d-flex flex-column">
+              <span className="author-name">{username}</span>
+              <span className="author-handle">
+                {data.createdAt
+                  ? new Date(data.createdAt).toLocaleDateString()
+                  : "Just now"}
+              </span>
+            </div>
           </div>
+          {isAiGenerated && (
+            <div className="ai-generated-badge d-flex align-items-center gap-1">
+              <Sparkles size={12} />
+              <span>AI Generated</span>
+            </div>
+          )}
         </div>
         <MyCardTitle>{title}</MyCardTitle>
         <MyCardDescription>{description}</MyCardDescription>
