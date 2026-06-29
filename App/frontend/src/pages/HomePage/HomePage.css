@@ -120,3 +120,12 @@
 .locked-login-link {
     text-decoration: none;
 }
+
+.error-feed-card {
+    background-color: var(--bg-code-block);
+}
+
+.error-subtitle {
+    max-width: 400px;
+    color: var(--text-secondary)
+}

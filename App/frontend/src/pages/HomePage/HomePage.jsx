@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import { Flame, Plus, TrendingUp, Lock } from "lucide-react";
+import { Flame, Plus, TrendingUp, Lock, AlertCircle } from "lucide-react";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
 import EmptyState from "../../components/EmptyState/EmptyState";
@@ -27,13 +27,15 @@ const trendingTags = [
 const filters = ["Trending", "Newest", "Most Forked"];
 
 const HomePage = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, logoutUser } = useContext(AuthContext);
   const [snippets, setSnippets] = useState([]);
+  const [error, setError] = useState(null);
 
   const [activeFilter, setActiveFilter] = useState(filters[0]);
 
   useEffect(() => {
     const fetchSnippets = async () => {
+      setError(null);
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
@@ -45,18 +47,79 @@ const HomePage = () => {
             },
           },
         );
+
+        if (response.status === 401) {
+          console.warn("Session expired or invalid token. Logging out...");
+          logoutUser();
+          return;
+        }
+        if (!response.ok) {
+          throw new Error("Unable to retrieve data from the server.");
+        }
         const data = await response.json();
 
         setSnippets(data.allSnippets);
       } catch (error) {
         console.error("Error loading snippets", error);
+        setError(
+          "Oops! Something went wrong while loading the feed. Please try again later.",
+        );
       }
     };
 
     if (isLoggedIn) {
       fetchSnippets();
     }
-  }, [isLoggedIn, activeFilter]);
+  }, [isLoggedIn, activeFilter, logoutUser]);
+
+  const renderFeedContent = () => {
+    if (!isLoggedIn) {
+      return (
+        <MyCard className="locked-feed-card py-5 mt-2 text-center border-0">
+          <MyCardContent className="d-flex flex-column align-items-center gap-3">
+            <Lock size={48} className="locked-icon mb-2" />
+            <MyCardTitle className="locked-title">
+              Log in to view the feed
+            </MyCardTitle>
+            <p className="locked-subtitle m-0 mb-3">
+              Join SnippetVault to explore, share, and fork code snippets from
+              developers worldwide.
+            </p>
+            <Link to="/login" className="locked-login-link">
+              <MyButton>Log in to continue</MyButton>
+            </Link>
+          </MyCardContent>
+        </MyCard>
+      );
+    }
+
+    if (error) {
+      return (
+        <MyCard className="error-feed-card py-5 mt-2 text-center border-0">
+          <MyCardContent className="d-flex flex-column align-items-center gap-3">
+            <AlertCircle size={48} className="text-danger mb-2" />
+            <MyCardTitle>Failed to load feed</MyCardTitle>
+            <p className="error-subtitle m-0 mb-3">{error}</p>
+            <MyButton onClick={() => window.location.reload()}>
+              Try Again
+            </MyButton>
+          </MyCardContent>
+        </MyCard>
+      );
+    }
+
+    if (snippets.length === 0) {
+      return <EmptyState />;
+    }
+
+    return (
+      <div className="d-flex flex-column gap-4">
+        {snippets.map((snippet) => (
+          <SnippetCard key={snippet._id} snippet={snippet} />
+        ))}
+      </div>
+    );
+  };
   return (
     <BaseLayout>
       <Container className="py-4 py-md-5">
@@ -94,33 +157,7 @@ const HomePage = () => {
                 })}
               </div>
 
-              {isLoggedIn ? (
-                <div className="d-flex flex-column gap-4">
-                  {snippets.length > 0 ? (
-                    snippets.map((post) => (
-                      <SnippetCard key={post._id} snippet={post} />
-                    ))
-                  ) : (
-                    <EmptyState />
-                  )}
-                </div>
-              ) : (
-                <MyCard className="locked-feed-card py-5 mt-2 text-center border-0">
-                  <MyCardContent className="d-flex flex-column align-items-center gap-3">
-                    <Lock size={48} className="locked-icon mb-2" />
-                    <MyCardTitle className="locked-title">
-                      Log in to view the feed
-                    </MyCardTitle>
-                    <p className="locked-subtitle m-0 mb-3">
-                      Join SnippetVault to explore, share, and fork code
-                      snippets from developers worldwide.
-                    </p>
-                    <Link to="/login" className="locked-login-link">
-                      <MyButton>Log in to continue</MyButton>
-                    </Link>
-                  </MyCardContent>
-                </MyCard>
-              )}
+              {renderFeedContent()}
             </div>
           </Col>
 
