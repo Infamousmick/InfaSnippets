@@ -7,20 +7,23 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import OauthSuccess from "./pages/OauthSuccess/OauthSuccess";
 import { AuthProvider } from "./context/AuthContext/AuthContext";
+import { SnippetProvider } from "./context/SnippetContext/SnippetContext";
 
 function App() {
   return (
     <>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/oauth/success/" element={<OauthSuccess />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </BrowserRouter>
+        <SnippetProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/oauth/success/" element={<OauthSuccess />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </BrowserRouter>
+        </SnippetProvider>
       </AuthProvider>
     </>
   );

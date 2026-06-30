@@ -14,10 +14,12 @@ import MyButton from "../MyButton/MyButton";
 import "./MyNav.css";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 
 const MyNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { openModal } = useContext(SnippetContext);
 
   const inLoginOrRegister =
     location.pathname.startsWith("/login") ||
@@ -75,7 +77,7 @@ const MyNav = () => {
         </div>
 
         {isLoggedIn && (
-          <MyButton className="flex-shrink-0">
+          <MyButton className="flex-shrink-0" onClick={openModal}>
             <Plus size={18} />
             <span className="d-none d-sm-inline">New Snippet</span>
           </MyButton>

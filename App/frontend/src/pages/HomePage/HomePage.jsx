@@ -1,8 +1,9 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import { Flame, Plus, TrendingUp, Lock, AlertCircle } from "lucide-react";
+import SnippetForm from "../../components/SnippetForm/SnippetForm";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
 import EmptyState from "../../components/EmptyState/EmptyState";
@@ -14,7 +15,7 @@ import {
 } from "../../components/MyCard/MyCard";
 import MyButton from "../../components/MyButton/MyButton";
 import "./HomePage.css";
-
+import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 const trendingTags = [
   { tag: "react", count: "12.4k" },
   { tag: "typescript", count: "9.8k" },
@@ -27,50 +28,10 @@ const trendingTags = [
 const filters = ["Trending", "Newest", "Most Forked"];
 
 const HomePage = () => {
-  const { isLoggedIn, logoutUser } = useContext(AuthContext);
-  const [snippets, setSnippets] = useState([]);
-  const [error, setError] = useState(null);
+  const { isLoggedIn } = useContext(AuthContext);
 
-  const [activeFilter, setActiveFilter] = useState(filters[0]);
-
-  useEffect(() => {
-    const fetchSnippets = async () => {
-      setError(null);
-      try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-          `${import.meta.env.VITE_APP_SERVERURL}/snippets/all?sort=${activeFilter}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          },
-        );
-
-        if (response.status === 401) {
-          console.warn("Session expired or invalid token. Logging out...");
-          logoutUser();
-          return;
-        }
-        if (!response.ok) {
-          throw new Error("Unable to retrieve data from the server.");
-        }
-        const data = await response.json();
-
-        setSnippets(data.allSnippets);
-      } catch (error) {
-        console.error("Error loading snippets", error);
-        setError(
-          "Oops! Something went wrong while loading the feed. Please try again later.",
-        );
-      }
-    };
-
-    if (isLoggedIn) {
-      fetchSnippets();
-    }
-  }, [isLoggedIn, activeFilter, logoutUser]);
+  const { snippets, error, activeFilter, setActiveFilter, openModal } =
+    useContext(SnippetContext);
 
   const renderFeedContent = () => {
     if (!isLoggedIn) {
@@ -135,7 +96,7 @@ const HomePage = () => {
                 </div>
 
                 {isLoggedIn && (
-                  <MyButton className="d-md-none px-3 py-1">
+                  <MyButton className=" px-3 py-1" onClick={openModal}>
                     <Plus size={16} /> New
                   </MyButton>
                 )}
